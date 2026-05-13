@@ -12,14 +12,17 @@ export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/
 # Path to the cloned Pugstorm CoreKeeperModSDK (sibling to this repo recommended)
 export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
 
-# Mod install path inside the CrossOver Core Keeper bottle.
-# StreamingAssets/Mods/ is the SDK-default destination; the builder
-# creates a DisableDurability/ subfolder inside it automatically.
+# Directory where Pugstorm's ModBuilder writes its output. The builder
+# always appends a `DisableDurability/` subfolder, so the final layout
+# is `$MOD_INSTALL_PATH/DisableDurability/{ModManifest.json,Scripts,Bundles}`.
 #
-# On macOS / CrossOver, Pugstorm's loader cannot extract Scripts/ from
-# this path due to a Wine bug. `./scripts/build.sh` auto-detects macOS
-# and runs `./scripts/install-macos.sh` after the build to route the
-# mod through mod.io's load path. See
-# docs/research/macos-crossover-wine-workaround.md for background, and
-# set SKIP_MACOS_INSTALL=1 to opt out.
-export MOD_INSTALL_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper/drive_c/Program Files (x86)/Steam/steamapps/common/Core Keeper/CoreKeeper_Data/StreamingAssets/Mods/"
+# Win/Linux: pointing this at the game's `CoreKeeper_Data/StreamingAssets/Mods/`
+#   makes the mod active immediately — the game loads from there.
+#
+# macOS / CrossOver: leave this at a neutral staging path (the default below).
+#   Pugstorm's loader cannot extract Scripts/ from StreamingAssets under
+#   Wine, so `./scripts/build.sh` auto-runs `./scripts/install-macos.sh`,
+#   which copies from this staging dir into the mod.io load path. See
+#   docs/research/macos-crossover-wine-workaround.md. Set
+#   SKIP_MACOS_INSTALL=1 to opt out of the auto-install step.
+export MOD_INSTALL_PATH="$HOME/Library/Caches/disable-durability-build/"
