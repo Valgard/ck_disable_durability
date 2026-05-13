@@ -6,10 +6,17 @@
 #   SDK_PATH           Path to the cloned Pugstorm CoreKeeperModSDK
 #   MOD_INSTALL_PATH   Destination Mods/ folder inside the game install
 #
+# On macOS, this script also runs `scripts/install-macos.sh` after the build
+# to apply the CrossOver/Wine workaround (route the mod through mod.io's
+# load path so Pugstorm's source-extract code doesn't hit the Wine bug).
+# See docs/research/macos-crossover-wine-workaround.md for the full story.
+# Set SKIP_MACOS_INSTALL=1 to opt out of the workaround step.
+#
 # Exit codes:
-#   0   Build succeeded
+#   0   Build succeeded (and on macOS, install step also succeeded)
 #   1   Env var missing or invalid path
 #   2   Unity binary returned non-zero (build failure or Unity crash)
+#   3   macOS install step failed
 
 set -euo pipefail
 
@@ -43,8 +50,23 @@ if "$UNITY_BIN" \
         -executeMethod DisableDurability.Editor.CLIBuildHelper.Build \
         -logFile - \
         -quit; then
-    echo "✓ Build complete. Restart Core Keeper to load."
+    echo "✓ Build complete."
 else
     echo "✗ Build failed. Check Unity log output above for errors." >&2
     exit 2
+fi
+
+# 4. On macOS, apply the CrossOver/Wine workaround.
+if [ "$(uname -s)" = "Darwin" ] && [ -z "${SKIP_MACOS_INSTALL:-}" ]; then
+    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+    echo
+    if "$SCRIPT_DIR/install-macos.sh"; then
+        echo "✓ macOS install complete. Launch Core Keeper to load."
+        echo "  Reminder: do NOT open the in-game Mod menu."
+    else
+        echo "✗ macOS install step failed." >&2
+        exit 3
+    fi
+else
+    echo "  Restart Core Keeper to load."
 fi

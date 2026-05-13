@@ -15,4 +15,11 @@ export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
 # Mod install path inside the CrossOver Core Keeper bottle.
 # StreamingAssets/Mods/ is the SDK-default destination; the builder
 # creates a DisableDurability/ subfolder inside it automatically.
+#
+# On macOS / CrossOver, Pugstorm's loader cannot extract Scripts/ from
+# this path due to a Wine bug. `./scripts/build.sh` auto-detects macOS
+# and runs `./scripts/install-macos.sh` after the build to route the
+# mod through mod.io's load path. See
+# docs/research/macos-crossover-wine-workaround.md for background, and
+# set SKIP_MACOS_INSTALL=1 to opt out.
 export MOD_INSTALL_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper/drive_c/Program Files (x86)/Steam/steamapps/common/Core Keeper/CoreKeeper_Data/StreamingAssets/Mods/"
