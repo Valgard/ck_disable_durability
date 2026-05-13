@@ -32,8 +32,9 @@ mkdir -p Editor
 ln -sfn "$REPO_ROOT/src/DisableDurabilityMod.cs"  DisableDurabilityMod.cs
 ln -sfn "$REPO_ROOT/src/NoDurabilityLossPatch.cs" NoDurabilityLossPatch.cs
 ln -sfn "$REPO_ROOT/src/ModConfig.cs"             ModConfig.cs
-ln -sfn "$REPO_ROOT/src/Editor/CLIBuildHelper.cs" Editor/CLIBuildHelper.cs
+ln -sfn "$REPO_ROOT/src/Editor/CLIBuildHelper.cs"             Editor/CLIBuildHelper.cs
+ln -sfn "$REPO_ROOT/src/Editor/DisableDurability.Editor.asmdef" Editor/DisableDurability.Editor.asmdef
 ln -sfn "$REPO_ROOT/config/config.json"           config.json
 
 echo "✓ Symlinks created in $SDK_MOD_DIR:"
-ls -la DisableDurabilityMod.cs NoDurabilityLossPatch.cs ModConfig.cs Editor/CLIBuildHelper.cs config.json
+ls -la DisableDurabilityMod.cs NoDurabilityLossPatch.cs ModConfig.cs Editor/CLIBuildHelper.cs Editor/DisableDurability.Editor.asmdef config.json
