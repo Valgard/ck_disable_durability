@@ -15,7 +15,9 @@ namespace DisableDurability.Editor
     public static class CLIBuildHelper
     {
         private const string ModName = "DisableDurability";
-        private const string SettingsPath = "Assets/Mods/" + ModName + ".asset";
+        // PugMod SDK Window's "Create Mod" wizard creates ModBuilderSettings at the
+        // root of Assets/ (not inside a Mods/ subfolder, as earlier plan revisions assumed).
+        private const string SettingsPath = "Assets/" + ModName + ".asset";
 
         public static void Build()
         {
