@@ -1,3 +1,4 @@
+using PlayerEquipment;
 using PugMod;
 using UnityEngine;
 
@@ -5,10 +6,12 @@ namespace DisableDurability
 {
     /// <summary>
     /// Mod bootstrap. The Pugstorm mod loader instantiates this class on
-    /// game start and calls the IMod lifecycle methods. We don't need
-    /// custom logic here — Harmony patches in this assembly are discovered
-    /// automatically — but having an IMod implementation matches the
-    /// pattern used by other published Core Keeper mods (e.g., PermaBreak).
+    /// game start and calls the IMod lifecycle methods.
+    ///
+    /// The <see cref="BurstDisabler"/> call in <see cref="Init"/> is required
+    /// because Harmony cannot patch Burst-compiled job entry points. By
+    /// disabling Burst for the <see cref="ChangeDurabilitySystem"/> group,
+    /// the system's managed <c>OnUpdate</c> method becomes patchable.
     /// </summary>
     public sealed class DisableDurabilityMod : IMod
     {
@@ -18,6 +21,7 @@ namespace DisableDurability
 
         public void Init()
         {
+            BurstDisabler.DisableBurstForSystem<ChangeDurabilitySystem>();
             Debug.Log(
                 $"[DisableDurability] Mod initialized. Enabled={ModConfig.Instance.enabled}");
         }

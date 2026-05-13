@@ -1,17 +1,27 @@
 using HarmonyLib;
+using PlayerEquipment;
 using UnityEngine;
 
 namespace DisableDurability
 {
     /// <summary>
-    /// Harmony Prefix that suppresses durability decrement on equipped items.
-    /// Target identified via PermaBreak inspection — see
-    /// <c>docs/research/permabreak-patch-target.md</c>.
+    /// Harmony Prefix that suppresses the ECS system responsible for changing
+    /// item durability. Target identified by inspecting Pug.Other.dll exports:
+    /// <c>PlayerEquipment.ChangeDurabilitySystem</c> is the SystemBase that
+    /// schedules <c>ChangeDurabilityOfHeldEquipmentJob</c> and
+    /// <c>ReduceDurabilityOfAllEquipmentJob</c> each tick. Skipping its
+    /// <c>OnUpdate</c> prevents both jobs from being scheduled.
     ///
-    /// Returning <c>false</c> from the Prefix skips the original method;
-    /// returning <c>true</c> lets it run normally (used when the mod is disabled).
+    /// Note: the original research note pointed at
+    /// <c>PlayerController.ReduceDurabilityOfEquipment</c> (matching PermaBreak's
+    /// source), but that method no longer exists in the current Core Keeper
+    /// build. The system-level patch is the actual mechanism.
+    ///
+    /// Burst-compiled jobs cannot themselves be patched by Harmony, but the
+    /// system's <c>OnUpdate</c> is regular managed code. See
+    /// <c>DisableDurabilityMod.Init</c> for the BurstDisabler workaround.
     /// </summary>
-    [HarmonyPatch(typeof(PlayerController), nameof(PlayerController.ReduceDurabilityOfEquipment))]
+    [HarmonyPatch(typeof(ChangeDurabilitySystem), "OnUpdate")]
     [HarmonyPriority(Priority.Last)]
     public static class NoDurabilityLossPatch
     {
