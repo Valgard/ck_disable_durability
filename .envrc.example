@@ -6,8 +6,8 @@
 # Optional: install direnv (`brew install direnv`) so the file auto-loads
 # on `cd` into this directory.
 
-# Path to the Unity Editor binary (must be Unity 6000.0.58f2 per the SDK)
-export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.58f2/Unity.app/Contents/MacOS/Unity"
+# Path to the Unity Editor binary (must be Unity 6000.0.59f2 per the SDK)
+export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity"
 
 # Path to the cloned Pugstorm CoreKeeperModSDK (sibling to this repo recommended)
 export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"

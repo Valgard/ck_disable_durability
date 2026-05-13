@@ -6,7 +6,7 @@
 
 **Architecture:** A single Harmony `Prefix` patch (target method resolved in Task 3) suppresses the durability-decrement code path. A lazy-loaded `ModConfig` singleton reads a JSON config sitting next to the mod DLL and exposes a `bool Enabled` flag. An Editor-only `CLIBuildHelper` wraps `PugMod.ModBuilder.BuildMod(...)` so the build runs from a shell via `unity -batchmode -executeMethod`.
 
-**Tech Stack:** C# 9, Unity 6 (Editor `6000.0.58f2`), Linux Mono target, HarmonyLib (game-bundled), Pugstorm `dev.pugstorm.mod` 0.1.0, bash for build scripts. No automated test framework — verification is manual per the design spec `§11`.
+**Tech Stack:** C# 9, Unity 6 (Editor `6000.0.59f2`), Linux Mono target, HarmonyLib (game-bundled), Pugstorm `dev.pugstorm.mod` 0.1.0, bash for build scripts. No automated test framework — verification is manual per the design spec `§11`.
 
 **Reference spec:** `docs/superpowers/specs/2026-05-13-disable-durability-design.md` — cite by section number throughout this plan.
 
@@ -82,8 +82,8 @@ Write `.envrc.example` with this exact content:
 # Optional: install direnv (`brew install direnv`) so the file auto-loads
 # on `cd` into this directory.
 
-# Path to the Unity Editor binary (must be Unity 6000.0.58f2 per the SDK)
-export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.58f2/Unity.app/Contents/MacOS/Unity"
+# Path to the Unity Editor binary (must be Unity 6000.0.59f2 per the SDK)
+export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity"
 
 # Path to the cloned Pugstorm CoreKeeperModSDK (sibling to this repo recommended)
 export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
@@ -610,7 +610,7 @@ Create `scripts/build.sh`:
 # scripts/build.sh — Build the Disable Durability mod via Unity batchmode.
 #
 # Required env vars (set in .envrc):
-#   UNITY_BIN          Path to the Unity Editor binary (Unity 6000.0.58f2)
+#   UNITY_BIN          Path to the Unity Editor binary (Unity 6000.0.59f2)
 #   SDK_PATH           Path to the cloned Pugstorm CoreKeeperModSDK
 #   MOD_INSTALL_PATH   Destination Mods/ folder inside the game install
 #
@@ -766,13 +766,13 @@ User confirms:
 
 User downloads Unity Hub from `https://unity.com/unity-hub` and installs to `/Applications/`. Signs in / creates a Unity account; accepts free Personal license.
 
-- [ ] **Step 3: Install Unity Editor 6000.0.58f2 with Linux Mono Build Support**
+- [ ] **Step 3: Install Unity Editor 6000.0.59f2 with Linux Mono Build Support**
 
-User: Unity Hub → Installs → Install Editor → version `6000.0.58f2` (may be in Archive). **Critical:** in the modules dialog, check `Linux Build Support (Mono)`.
+User: Unity Hub → Installs → Install Editor → version `6000.0.59f2` (may be in Archive). **Critical:** in the modules dialog, check `Linux Build Support (Mono)`.
 
 Verify (run in terminal after install):
 ```bash
-ls /Applications/Unity/Hub/Editor/6000.0.58f2/Unity.app/Contents/MacOS/Unity
+ls /Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity
 ```
 Expected: file exists.
 

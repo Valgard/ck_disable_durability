@@ -2,7 +2,7 @@
 # scripts/build.sh — Build the Disable Durability mod via Unity batchmode.
 #
 # Required env vars (set in .envrc):
-#   UNITY_BIN          Path to the Unity Editor binary (Unity 6000.0.58f2)
+#   UNITY_BIN          Path to the Unity Editor binary (Unity 6000.0.59f2)
 #   SDK_PATH           Path to the cloned Pugstorm CoreKeeperModSDK
 #   MOD_INSTALL_PATH   Destination Mods/ folder inside the game install
 #

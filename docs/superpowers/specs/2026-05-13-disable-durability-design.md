@@ -34,7 +34,7 @@ Items in Core Keeper lose durability when used and eventually break. For a QoL-f
 
 - **Pugstorm EULA**: mods may only be distributed non-commercially.
 - **Test environment**: macOS host, Core Keeper Windows build running under CrossOver.
-- **Build toolchain**: Unity Editor 6000.0.58f2 with Linux Build Support (Mono) is required by the SDK.
+- **Build toolchain**: Unity Editor 6000.0.59f2 with Linux Build Support (Mono) is required by the SDK.
 - **Architecture**: Core Keeper uses Unity DOTS / ECS; durability lives as component data, not as a field on a `MonoBehaviour`.
 
 ## 5. Architecture
@@ -256,12 +256,14 @@ Unity Hub is the launcher / version-manager for Unity Editor installs.
    - Sign in with a Unity account (create one if needed — free, no payment required).
    - Accept the free **Personal** license when prompted (sufficient for non-commercial modding).
 
-#### 10.1.3 Install Unity Editor 6000.0.58f2 with Linux Mono build support
+#### 10.1.3 Install Unity Editor 6000.0.59f2 with Linux Mono build support
 
 The SDK is **pinned to this exact version**. Mismatched versions may not import the project correctly.
 
+> **Note on version source:** The SDK's `README.md` mentions `6000.0.58f2`, but `ProjectSettings/ProjectVersion.txt` (the file Unity actually reads when opening a project) pins to `6000.0.59f2`. The project file is authoritative — install `6000.0.59f2`. If you already have a newer Unity 6 release installed (e.g., `6000.4.6f1`), keep it; Unity Hub supports parallel Editor versions, and using the newer one to open this SDK would trigger an irreversible project upgrade that may break the DOTS-heavy mod toolchain.
+
 1. In Unity Hub: **Installs** tab → **Install Editor**.
-2. Find `6000.0.58f2` in the version list. If absent from "Official Releases", scroll to **Archive** → click "download archive" — the linked page lets you launch Unity Hub directly into the install flow for that specific version.
+2. Find `6000.0.59f2` in the version list. If absent from "Official Releases", scroll to **Archive** → click "download archive" — the linked page lets you launch Unity Hub directly into the install flow for that specific version.
 3. When the **Add modules** dialog appears, **check `Linux Build Support (Mono)`**. This is mandatory for Core Keeper mods (per SDK README).
    - Other modules (WebGL, iOS, Android) are optional and add 1–2 GB each — skip them.
 4. Continue and accept the Unity EULA.
@@ -269,7 +271,7 @@ The SDK is **pinned to this exact version**. Mismatched versions may not import 
 6. Verify the editor binary path (you'll need it as `$UNITY_BIN` below):
 
    ```bash
-   ls /Applications/Unity/Hub/Editor/6000.0.58f2/Unity.app/Contents/MacOS/Unity
+   ls /Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity
    ```
 
 #### 10.1.4 Clone the Pugstorm Mod SDK
@@ -385,7 +387,7 @@ Create `disable-durability/.envrc`:
 
 ```bash
 # .envrc — source from your shell before working on this mod.
-export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.58f2/Unity.app/Contents/MacOS/Unity"
+export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity"
 export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
 export MOD_INSTALL_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper/drive_c/Program Files (x86)/Steam/steamapps/common/Core Keeper/CoreKeeper_Data/StreamingAssets/Mods/"
 ```
@@ -458,7 +460,7 @@ A `scripts/build.sh` wrapper sets defaults, syncs `src/` into the SDK, and forwa
 Configured once in `.envrc` (or shell rc):
 
 ```bash
-export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.58f2/Unity.app/Contents/MacOS/Unity"
+export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity"
 export SDK_PATH="$HOME/.../CoreKeeperModSDK"
 export MOD_INSTALL_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper/drive_c/Program Files (x86)/Steam/steamapps/common/Core Keeper/CoreKeeper_Data/StreamingAssets/Mods/"
 ```
