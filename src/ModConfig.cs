@@ -1,47 +1,20 @@
-using System;
-using System.IO;
-using UnityEngine;
-
 namespace DisableDurability
 {
     /// <summary>
-    /// Lazy-loaded mod configuration. Reads <c>config.json</c> from the
-    /// directory containing this assembly. Falls back to defaults if the
-    /// file is missing or malformed.
+    /// Mod configuration. V1 ships with a hardcoded <c>enabled = true</c>
+    /// because Pugstorm's mod-loader compiles mod scripts with the RoslynCSharp
+    /// sandbox, which blocks <see cref="System.IO"/> by default. Reading a
+    /// <c>config.json</c> next to the mod requires either
+    /// <c>skipSafetyChecks: true</c> in the manifest (security-trade-off) or
+    /// a Pugstorm-provided safe file API. Both are V2 candidates; V1 keeps
+    /// the API shape stable (<c>ModConfig.Instance.enabled</c>) so a future
+    /// config-loader can drop in without changing consumers.
     /// </summary>
-    [Serializable]
     internal sealed class ModConfig
     {
-        // Public field (not property) because Unity's JsonUtility populates
-        // fields, not properties. Default value matches the "missing file"
-        // fallback — a user who installed the mod presumably wants it active.
         public bool enabled = true;
 
-        private static ModConfig _instance;
-        public static ModConfig Instance => _instance ??= Load();
-
-        private static ModConfig Load()
-        {
-            var cfg = new ModConfig();
-            var dllPath = typeof(ModConfig).Assembly.Location;
-            var dllDir = Path.GetDirectoryName(dllPath);
-            if (string.IsNullOrEmpty(dllDir)) return cfg;
-
-            var cfgPath = Path.Combine(dllDir, "config.json");
-            if (!File.Exists(cfgPath)) return cfg;
-
-            try
-            {
-                var json = File.ReadAllText(cfgPath);
-                var parsed = JsonUtility.FromJson<ModConfig>(json);
-                if (parsed != null) cfg = parsed;
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning(
-                    $"[DisableDurability] Config parse failed: {e.Message} — using defaults.");
-            }
-            return cfg;
-        }
+        private static readonly ModConfig _instance = new ModConfig();
+        public static ModConfig Instance => _instance;
     }
 }
