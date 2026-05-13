@@ -83,7 +83,7 @@ disable-durability/                            # this git repo
     └── build.sh                               # wraps unity batchmode invocation
 ```
 
-The Pugstorm SDK is cloned separately (not vendored in this repo). `build.sh` syncs `src/` contents into the SDK's `Assets/Mods/DisableDurability/` folder and then invokes Unity. Decision on whether the SDK is a sibling clone, a submodule, or a worktree is deferred to the implementation planning phase.
+The Pugstorm SDK is cloned separately (not vendored in this repo). `build.sh` syncs `src/` contents into the SDK's `Assets/DisableDurability/` folder and then invokes Unity. Decision on whether the SDK is a sibling clone, a submodule, or a worktree is deferred to the implementation planning phase.
 
 ## 6. Patch strategy
 
@@ -315,9 +315,9 @@ git rev-parse HEAD            # note this SHA
 2. Find the "Create New Mod" workflow in the panel (Pugstorm's SDK exposes this via `ModSDKWindow/CreateMod.cs`; UI label may be a tab or button).
 3. Mod name: `DisableDurability` (no spaces — internal identifier).
 4. Confirm. The SDK creates:
-   - `Assets/Mods/DisableDurability/` folder with template files.
-   - `Assets/Mods/DisableDurability.asset` — a `ModBuilderSettings` ScriptableObject holding the manifest.
-5. Click `Assets/Mods/DisableDurability.asset` in the Project panel. The Inspector shows the manifest fields. Set:
+   - `Assets/DisableDurability/` folder with template files.
+   - `Assets/DisableDurability.asset` — a `ModBuilderSettings` ScriptableObject holding the manifest.
+5. Click `Assets/DisableDurability.asset` in the Project panel. The Inspector shows the manifest fields. Set:
    - `guid` — generate a fresh GUID: open a macOS terminal, run `uuidgen | tr A-Z a-z`, paste the result. Example: `a1b2c3d4-e5f6-7890-abcd-ef0123456789`.
    - `name` — `DisableDurability` (must match the folder name).
    - `displayName` — `Disable Durability` (user-facing label; spaces OK).
@@ -332,7 +332,7 @@ Our `.cs` files are canonical in **`disable-durability/src/`** (this git repo). 
 
 ```bash
 # Working directory: the SDK mod folder that PugMod just created
-cd /Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK/Assets/Mods/DisableDurability/
+cd /Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK/Assets/DisableDurability/
 
 # Create the Editor/ subfolder (Unity magic-folder for editor-only code)
 mkdir -p Editor

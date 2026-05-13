@@ -28,7 +28,7 @@ In `disable-durability/` (this repo):
 | `scripts/link.sh` | Idempotently creates symlinks from SDK clone back to this repo's `src/` and `config/` | new, executable |
 | `docs/research/permabreak-patch-target.md` | Findings from Task 3 — the patch target class + method, with reasoning | new |
 
-In `CoreKeeperModSDK/Assets/Mods/DisableDurability/` (SDK clone, **not** this repo):
+In `CoreKeeperModSDK/Assets/DisableDurability/` (SDK clone, **not** this repo):
 - `ModBuilderSettings.asset` + `.meta` — created by the PugMod SDK Window in Task 10; Unity-managed.
 - `DisableDurability.asmdef` + `.meta` — created by the same workflow.
 - Symlinks pointing back to our `src/` and `config/` — created by `scripts/link.sh` in Task 11.
@@ -694,13 +694,13 @@ Create `scripts/link.sh`:
 ```bash
 #!/usr/bin/env bash
 # scripts/link.sh — Idempotently create symlinks from the SDK clone's
-# Assets/Mods/DisableDurability/ folder back to this repo's src/ and config/.
+# Assets/DisableDurability/ folder back to this repo's src/ and config/.
 #
 # Required env vars (set in .envrc):
 #   SDK_PATH   Path to the cloned Pugstorm CoreKeeperModSDK
 #
 # Preconditions:
-#   - SDK_PATH/Assets/Mods/DisableDurability/ must already exist (created by
+#   - SDK_PATH/Assets/DisableDurability/ must already exist (created by
 #     PugMod → Open Mod SDK Window → "Create Mod" in Task 10, step 10.1.6).
 #
 # This script uses absolute paths in the symlinks so the SDK clone can sit
@@ -711,7 +711,7 @@ set -euo pipefail
 : "${SDK_PATH:?must be set in .envrc}"
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SDK_MOD_DIR="$SDK_PATH/Assets/Mods/DisableDurability"
+SDK_MOD_DIR="$SDK_PATH/Assets/DisableDurability"
 
 if [ ! -d "$SDK_MOD_DIR" ]; then
     echo "ERROR: SDK mod dir not found: $SDK_MOD_DIR" >&2
@@ -797,7 +797,7 @@ Verify: user reports the Unity Editor main window is open with the SDK project v
 
 - [ ] **Step 6: Create the DisableDurability mod scaffold**
 
-User: top menu → PugMod → Open Mod SDK Window. In the panel, find the "Create New Mod" workflow. Enter mod name `DisableDurability`. Confirm. Inspect `Assets/Mods/DisableDurability.asset` and set fields per spec §10.1.6:
+User: top menu → PugMod → Open Mod SDK Window. In the panel, find the "Create New Mod" workflow. Enter mod name `DisableDurability`. Confirm. Inspect `Assets/DisableDurability.asset` and set fields per spec §10.1.6:
 
 - `guid` — generate with `uuidgen | tr A-Z a-z` and paste
 - `name` — `DisableDurability`
@@ -854,7 +854,7 @@ This task does not modify the repo. No commit.
 
 **Depends on:** Tasks 4–9 (source files committed) and Task 10 (SDK mod scaffold exists).
 
-**Files:** Symlinks created in `$SDK_PATH/Assets/Mods/DisableDurability/` (outside this repo).
+**Files:** Symlinks created in `$SDK_PATH/Assets/DisableDurability/` (outside this repo).
 
 - [ ] **Step 1: Source `.envrc` if not active**
 
@@ -872,7 +872,7 @@ Expected output: `✓ Symlinks created in …` plus a `ls -la` showing four syml
 
 - [ ] **Step 3: Verify Unity sees the new files**
 
-User switches to Unity Editor (it should be open from Task 10). Wait ~5 seconds. Unity auto-detects new files and runs an import. The Project panel should show, under `Assets/Mods/DisableDurability/`: `NoDurabilityLossPatch`, `ModConfig`, `config` (json), and an `Editor/` folder containing `CLIBuildHelper`.
+User switches to Unity Editor (it should be open from Task 10). Wait ~5 seconds. Unity auto-detects new files and runs an import. The Project panel should show, under `Assets/DisableDurability/`: `NoDurabilityLossPatch`, `ModConfig`, `config` (json), and an `Editor/` folder containing `CLIBuildHelper`.
 
 If Unity shows compile errors in the Console panel, leave them — they will be addressed in Task 12.
 
@@ -909,7 +909,7 @@ If build fails: user copies the error text from the Unity Console and pastes it 
 
 If the error contains `The type or namespace 'HarmonyLib' could not be found`:
 
-User edits `$SDK_PATH/Assets/Mods/DisableDurability/DisableDurability.asmdef` (a JSON file). Locate `references` array, append `"HarmonyLib"`:
+User edits `$SDK_PATH/Assets/DisableDurability/DisableDurability.asmdef` (a JSON file). Locate `references` array, append `"HarmonyLib"`:
 
 ```json
 {
