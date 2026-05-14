@@ -26,3 +26,8 @@ export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
 #   docs/research/macos-crossover-wine-workaround.md. Set
 #   SKIP_MACOS_INSTALL=1 to opt out of the auto-install step.
 export MOD_INSTALL_PATH="$HOME/Library/Caches/disable-durability-build/"
+
+# macOS only — CrossOver bottle that holds Core Keeper. The default below is
+# what `install-macos.sh` uses if this is unset. Override only if your bottle
+# has a non-default name (e.g. "Core Keeper 2").
+# export CK_BOTTLE_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper"

@@ -17,6 +17,11 @@
 #   MOD_INSTALL_PATH   The directory that contains the built `DisableDurability/`
 #                      mod folder (the destination `scripts/build.sh` writes to).
 #
+# Optional env vars:
+#   CK_BOTTLE_PATH     Path to the CrossOver bottle containing Core Keeper.
+#                      Defaults to "$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper".
+#                      Override only if your bottle has a non-default name.
+#
 # Idempotent — safe to re-run after each `./scripts/build.sh`.
 #
 # IMPORTANT: after running this, launch Core Keeper but DO NOT open the
@@ -37,27 +42,27 @@ MOD_NAME_ID="disable-durability"
 MOD_DISPLAY_NAME="Disable Durability"
 MOD_SUMMARY="Items never lose durability when used."
 
-# --- Derive paths from MOD_INSTALL_PATH --------------------------------------
+# --- Resolve bottle path and derive loader paths -----------------------------
 
-# MOD_INSTALL_PATH ends with .../CoreKeeper_Data/StreamingAssets/Mods/
-# Strip back to the bottle root: everything up to and including "Bottles/<name>/".
-BOTTLE_PATH="$(printf '%s' "$MOD_INSTALL_PATH" | sed -E 's|(/Bottles/[^/]+/).*|\1|')"
+# CrossOver bottle root. Override CK_BOTTLE_PATH in .envrc if your bottle name differs.
+CK_BOTTLE_PATH="${CK_BOTTLE_PATH:-$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper}"
 
-if [ ! -d "$BOTTLE_PATH" ]; then
-    echo "ERROR: could not derive bottle path from MOD_INSTALL_PATH." >&2
-    echo "       Tried: $BOTTLE_PATH" >&2
+if [ ! -d "$CK_BOTTLE_PATH" ]; then
+    echo "ERROR: CrossOver bottle not found at:" >&2
+    echo "       $CK_BOTTLE_PATH" >&2
+    echo "       Set CK_BOTTLE_PATH in .envrc if your bottle has a different name." >&2
     exit 1
 fi
 
 WINE_USER="crossover"   # CrossOver's default Wine username; adjust if your bottle differs.
 
 SRC="$MOD_INSTALL_PATH/$MOD_NAME"
-MODIO_BASE="$BOTTLE_PATH/drive_c/users/Public/mod.io/$GAME_ID"
+MODIO_BASE="$CK_BOTTLE_PATH/drive_c/users/Public/mod.io/$GAME_ID"
 MODIO_DST="$MODIO_BASE/mods/${FAKE_MOD_ID}_${FAKE_MODFILE_ID}"
-ZIP_DIR="$BOTTLE_PATH/drive_c/users/$WINE_USER/AppData/Local/Temp/Pugstorm/Core Keeper/$GAME_ID"
+ZIP_DIR="$CK_BOTTLE_PATH/drive_c/users/$WINE_USER/AppData/Local/Temp/Pugstorm/Core Keeper/$GAME_ID"
 ZIP_DST="$ZIP_DIR/${FAKE_MOD_ID}_${FAKE_MODFILE_ID}.zip"
 STATE_JSON="$MODIO_BASE/state.json"
-MODLOADER_CACHE="$BOTTLE_PATH/drive_c/users/$WINE_USER/AppData/Local/Temp/Pugstorm/Core Keeper/ModLoader/$MOD_NAME"
+MODLOADER_CACHE="$CK_BOTTLE_PATH/drive_c/users/$WINE_USER/AppData/Local/Temp/Pugstorm/Core Keeper/ModLoader/$MOD_NAME"
 
 # --- Sanity check on the built mod -------------------------------------------
 
