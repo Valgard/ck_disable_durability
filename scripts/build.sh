@@ -38,7 +38,12 @@ fi
 # 2. Ensure install path exists.
 mkdir -p "$MOD_INSTALL_PATH"
 
-# 3. Invoke Unity.
+# 3. Refresh symlinks into the SDK clone. Idempotent; cheap; self-heals
+# after worktree switches or repo moves where existing symlinks would dangle.
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+"$SCRIPT_DIR/link.sh" >/dev/null
+
+# 4. Invoke Unity.
 echo "Building DisableDurability mod..."
 echo "  SDK:     $SDK_PATH"
 echo "  Install: $MOD_INSTALL_PATH"
@@ -56,9 +61,8 @@ else
     exit 2
 fi
 
-# 4. On macOS, apply the CrossOver/Wine workaround.
+# 5. On macOS, apply the CrossOver/Wine workaround.
 if [ "$(uname -s)" = "Darwin" ] && [ -z "${SKIP_MACOS_INSTALL:-}" ]; then
-    SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
     echo
     if "$SCRIPT_DIR/install-macos.sh"; then
         echo "✓ macOS install complete. Launch Core Keeper to load."

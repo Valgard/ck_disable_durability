@@ -17,7 +17,7 @@ source .envrc           # exports UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH
 
 Unity Editor must be closed (it locks the project). The build takes ~90 s on a warm machine. `scripts/install-macos.sh` is the macOS-specific deploy step; opt out with `SKIP_MACOS_INSTALL=1`.
 
-`scripts/link.sh` is a one-time setup step that symlinks `src/`, `src/Editor/`, and `config/` into `$SDK_PATH/Assets/DisableDurability/`. Re-run any time the repo path changes — that includes **after entering or exiting a git worktree**: the existing symlinks point at whichever path was current when link.sh last ran, so a worktree switch leaves them dangling and the next build fails with `Compilation Pipeline: Could not read file …asmdef`.
+`scripts/link.sh` symlinks `src/`, `src/Editor/`, and `config/` into `$SDK_PATH/Assets/DisableDurability/`. `build.sh` invokes it idempotently on every run, so worktree switches and repo moves self-heal without manual intervention. Run `link.sh` standalone only when iterating on the SDK side outside of `build.sh` (e.g. opening the SDK in Unity Editor and wanting fresh symlinks first).
 
 There are no automated tests. Verification is manual per spec §11; the gameplay smoke test is "load a world, mine 30 blocks with a pickaxe, durability bar stays put."
 
