@@ -1,40 +1,53 @@
 #!/usr/bin/env bash
-# scripts/link.sh — Idempotently create symlinks from the SDK clone's
-# Assets/DisableDurability/ folder back to this repo's src/ and config/.
+# scripts/link.sh — Idempotently symlink the mod into the shared SDK clone.
+#
+# The mod's canonical files live in this repo under `unity/`, laid out as a
+# 1:1 mirror of the SDK's `Assets/` tree. This script links that mirror into
+# the SDK clone so Unity builds against it:
+#
+#   $SDK_PATH/Assets/DisableDurability            -> unity/DisableDurability/   (dir symlink)
+#   $SDK_PATH/Assets/DisableDurability.asset      -> unity/DisableDurability.asset
+#   $SDK_PATH/Assets/DisableDurability.asset.meta -> unity/DisableDurability.asset.meta
+#   $SDK_PATH/Assets/DisableDurability.meta       -> unity/DisableDurability.meta
+#
+# The single directory symlink captures every file inside the mod folder —
+# including ones the Unity Editor adds later — so nothing has to be wired up
+# here by hand. The three Assets-level files sit beside the mod folder (the
+# ModBuilderSettings asset + the folder's own .meta) and need their own links.
 #
 # Required env vars (set in .envrc):
 #   SDK_PATH   Path to the cloned Pugstorm CoreKeeperModSDK
 #
-# Preconditions:
-#   - SDK_PATH/Assets/DisableDurability/ must already exist (created by
-#     PugMod → Open Mod SDK Window → "Create Mod" in Task 10, step 10.1.6).
-#
-# This script uses absolute paths in the symlinks so the SDK clone can sit
-# anywhere on disk. Re-run after moving either repo.
+# The symlinks encode an absolute path, so they dangle after a worktree
+# switch or repo move. `build.sh` re-runs this on every build; run it
+# standalone only when iterating on the SDK side outside of `build.sh`.
 
 set -euo pipefail
 
 : "${SDK_PATH:?must be set in .envrc}"
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SDK_MOD_DIR="$SDK_PATH/Assets/DisableDurability"
+ASSETS="$SDK_PATH/Assets"
+MIRROR="$REPO_ROOT/unity"
 
-if [ ! -d "$SDK_MOD_DIR" ]; then
-    echo "ERROR: SDK mod dir not found: $SDK_MOD_DIR" >&2
-    echo "Create it first via PugMod → Open Mod SDK Window → Create Mod." >&2
+if [ ! -d "$ASSETS" ]; then
+    echo "ERROR: SDK Assets dir not found: $ASSETS" >&2
+    echo "Is SDK_PATH correct, and has the SDK been set up?" >&2
     exit 1
 fi
 
-cd "$SDK_MOD_DIR"
-mkdir -p Editor
+if [ ! -d "$MIRROR/DisableDurability" ]; then
+    echo "ERROR: mod mirror not found: $MIRROR/DisableDurability" >&2
+    exit 1
+fi
 
-# -s symbolic, -f force overwrite existing link, -n don't dereference existing dir-link
-ln -sfn "$REPO_ROOT/src/DisableDurabilityMod.cs"  DisableDurabilityMod.cs
-ln -sfn "$REPO_ROOT/src/NoDurabilityLossPatch.cs" NoDurabilityLossPatch.cs
-ln -sfn "$REPO_ROOT/src/ModConfig.cs"             ModConfig.cs
-ln -sfn "$REPO_ROOT/src/Editor/CLIBuildHelper.cs"             Editor/CLIBuildHelper.cs
-ln -sfn "$REPO_ROOT/src/Editor/DisableDurability.Editor.asmdef" Editor/DisableDurability.Editor.asmdef
-ln -sfn "$REPO_ROOT/config/config.json"           config.json
+# -s symbolic, -f overwrite existing link, -n don't dereference an existing
+# symlink-to-dir (so re-runs replace the link instead of nesting inside it).
+ln -sfn "$MIRROR/DisableDurability"            "$ASSETS/DisableDurability"
+ln -sfn "$MIRROR/DisableDurability.asset"      "$ASSETS/DisableDurability.asset"
+ln -sfn "$MIRROR/DisableDurability.asset.meta" "$ASSETS/DisableDurability.asset.meta"
+ln -sfn "$MIRROR/DisableDurability.meta"       "$ASSETS/DisableDurability.meta"
 
-echo "✓ Symlinks created in $SDK_MOD_DIR:"
-ls -la DisableDurabilityMod.cs NoDurabilityLossPatch.cs ModConfig.cs Editor/CLIBuildHelper.cs Editor/DisableDurability.Editor.asmdef config.json
+echo "✓ Symlinks created in $ASSETS:"
+ls -la "$ASSETS/DisableDurability" "$ASSETS/DisableDurability.asset" \
+       "$ASSETS/DisableDurability.asset.meta" "$ASSETS/DisableDurability.meta"
