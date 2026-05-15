@@ -36,7 +36,12 @@ Set `enabled` to `false` and restart the game to disable durability protection w
 
 ## Build (developer)
 
-See `docs/superpowers/specs/2026-05-13-disable-durability-design.md` §10.
+```bash
+source .envrc           # UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH
+./scripts/build.sh      # Unity batchmode build (Unity Editor must be closed)
+```
+
+See `CLAUDE.md` for SDK setup, the macOS/CrossOver workaround, and architecture.
 
 ## License
 

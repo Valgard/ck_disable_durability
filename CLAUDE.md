@@ -6,8 +6,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A Core Keeper mod that disables item durability loss by Harmony-patching `PlayerEquipment.ChangeDurabilitySystem.OnUpdate` to skip the original. Built against Pugstorm's official `CoreKeeperModSDK`. Single-target, personal-use, non-commercial (Pugstorm EULA).
 
-The lived design spec is `docs/superpowers/specs/2026-05-13-disable-durability-design.md` and the implementation history is `docs/superpowers/plans/2026-05-13-disable-durability-implementation.md`. Read those before changing scope, mod target, or build pipeline.
-
 ## Build and deploy
 
 ```bash
@@ -19,13 +17,13 @@ Unity Editor must be closed (it locks the project). The build takes ~90 s on a w
 
 `scripts/link.sh` symlinks the repo's `unity/` mirror into `$SDK_PATH/Assets/`: one **directory** symlink for `unity/DisableDurability/`, plus three file symlinks for the Assets-level files beside it (`DisableDurability.asset`, `.asset.meta`, `.meta`). `build.sh` invokes it idempotently on every run, so worktree switches and repo moves self-heal without manual intervention. Run `link.sh` standalone only when iterating on the SDK side outside of `build.sh` (e.g. opening the SDK in Unity Editor and wanting fresh symlinks first).
 
-There are no automated tests. Verification is manual per spec §11; the gameplay smoke test is "load a world, mine 30 blocks with a pickaxe, durability bar stays put."
+There are no automated tests. Verification is manual; the gameplay smoke test is "load a world, mine 30 blocks with a pickaxe, durability bar stays put."
 
 ## Required external setup
 
 - **Unity Editor `6000.0.59f2`** (exact patch version — pinned in the SDK's `ProjectVersion.txt`, not the SDK's `README.md` which is one patch behind). Add the **Linux Build Support (Mono)** and, on macOS, **Windows Build Support (Mono)** modules via Unity Hub.
-- **`Pugstorm/CoreKeeperModSDK`** cloned as a sibling at `$SDK_PATH`. The wizard's "Create New Mod" + "Update Game Files" + manifest settings (`requiredOn=ClientAndServer`) must have been done once. See spec §10 for the procedure.
-- **`jq`** and standard macOS userland for `scripts/install-macos.sh`. **GNU `sed`** for plan-wide edits (Homebrew on macOS).
+- **`Pugstorm/CoreKeeperModSDK`** cloned as a sibling at `$SDK_PATH`. The wizard's "Create New Mod" + "Update Game Files" + manifest settings (`requiredOn=ClientAndServer`) must have been done once.
+- **`jq`** and standard macOS userland for `scripts/install-macos.sh`.
 
 ## Architecture
 
