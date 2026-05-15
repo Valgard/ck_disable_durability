@@ -37,8 +37,8 @@ Set `enabled` to `false` and restart the game to disable durability protection w
 ## Build (developer)
 
 ```bash
-source .envrc           # UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH
-./scripts/build.sh      # Unity batchmode build (Unity Editor must be closed)
+source .envrc           # UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH, MOD_NAME, …
+../utils/build.sh      # Unity batchmode build (Unity Editor must be closed)
 ```
 
 See `CLAUDE.md` for SDK setup, the macOS/CrossOver workaround, and architecture.

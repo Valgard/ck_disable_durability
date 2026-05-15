@@ -21,14 +21,14 @@ export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
 #
 # macOS / CrossOver: leave this at a neutral staging path (the default below).
 #   Pugstorm's loader cannot extract Scripts/ from StreamingAssets under
-#   Wine, so `./scripts/build.sh` auto-runs `./scripts/install-macos.sh`,
+#   Wine, so `../utils/build.sh` auto-runs `../utils/install-macos.sh`,
 #   which copies from this staging dir into the mod.io load path. See
 #   docs/research/macos-crossover-wine-workaround.md. Set
 #   SKIP_MACOS_INSTALL=1 to opt out of the auto-install step.
 export MOD_INSTALL_PATH="$HOME/Library/Caches/disable-durability-build/"
 
 # Core Keeper game version, written as the mod.io compatibility tag in the
-# fake mod.io install (scripts/install-macos.sh). Core Keeper's loader runs
+# fake mod.io install (utils/install-macos.sh). Core Keeper's loader runs
 # ModVersion.IsCompatible(gameVersion, modProfile.tags); without a matching
 # tag the mod is rejected as "not compatible with current version". Set this
 # to the version the game prints as `Game version: X` in Player.log.
@@ -38,3 +38,21 @@ export CK_GAME_VERSION="1.2.1.2"
 # what `install-macos.sh` uses if this is unset. Override only if your bottle
 # has a non-default name (e.g. "Core Keeper 2").
 # export CK_BOTTLE_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper"
+
+# --- Mod identity (consumed by the shared utils/ scripts) --------------------
+
+# The mod's PascalCase name. Drives the SDK symlink paths (utils/link.sh) and
+# the Unity build entry point (utils/build.sh runs
+# <MOD_NAME>.Editor.CLIBuildHelper.Build).
+export MOD_NAME="DisableDurability"
+
+# The mod's kebab-case id, written as `name_id` in the fake mod.io state.json.
+export MOD_NAME_ID="disable-durability"
+
+# One-line mod summary, written into state.json by utils/install-macos.sh.
+export MOD_SUMMARY="Items never lose durability when used."
+
+# A numeric mod.io ID not present in mod.io's catalog. Must be DISTINCT per
+# mod, or sibling mods' mods/<id>_1/ folders collide. faster-talents uses
+# 9999998.
+export FAKE_MOD_ID="9999999"

@@ -9,13 +9,13 @@ A Core Keeper mod that disables item durability loss by Harmony-patching `Player
 ## Build and deploy
 
 ```bash
-source .envrc           # exports UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH
-./scripts/build.sh      # Unity batchmode build; on Darwin auto-runs install-macos.sh
+source .envrc           # exports UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH, MOD_NAME, …
+../utils/build.sh      # Unity batchmode build; on Darwin auto-runs install-macos.sh
 ```
 
-Unity Editor must be closed (it locks the project). The build takes ~90 s on a warm machine. `scripts/install-macos.sh` is the macOS-specific deploy step; opt out with `SKIP_MACOS_INSTALL=1`.
+Unity Editor must be closed (it locks the project). The build takes ~90 s on a warm machine. `utils/install-macos.sh` is the macOS-specific deploy step; opt out with `SKIP_MACOS_INSTALL=1`.
 
-`scripts/link.sh` symlinks the repo's `unity/` mirror into `$SDK_PATH/Assets/`: one **directory** symlink for `unity/DisableDurability/`, plus three file symlinks for the Assets-level files beside it (`DisableDurability.asset`, `.asset.meta`, `.meta`). `build.sh` invokes it idempotently on every run, so worktree switches and repo moves self-heal without manual intervention. Run `link.sh` standalone only when iterating on the SDK side outside of `build.sh` (e.g. opening the SDK in Unity Editor and wanting fresh symlinks first).
+`utils/link.sh` symlinks the repo's `unity/` mirror into `$SDK_PATH/Assets/`: one **directory** symlink for `unity/DisableDurability/`, plus three file symlinks for the Assets-level files beside it (`DisableDurability.asset`, `.asset.meta`, `.meta`). `build.sh` invokes it idempotently on every run, so worktree switches and repo moves self-heal without manual intervention. Run `link.sh` standalone only when iterating on the SDK side outside of `build.sh` (e.g. opening the SDK in Unity Editor and wanting fresh symlinks first).
 
 There are no automated tests. Verification is manual; the gameplay smoke test is "load a world, mine 30 blocks with a pickaxe, durability bar stays put."
 
@@ -23,7 +23,7 @@ There are no automated tests. Verification is manual; the gameplay smoke test is
 
 - **Unity Editor `6000.0.59f2`** (exact patch version — pinned in the SDK's `ProjectVersion.txt`, not the SDK's `README.md` which is one patch behind). Add the **Linux Build Support (Mono)** and, on macOS, **Windows Build Support (Mono)** modules via Unity Hub.
 - **`Pugstorm/CoreKeeperModSDK`** cloned as a sibling at `$SDK_PATH`. The wizard's "Create New Mod" + "Update Game Files" + manifest settings (`requiredOn=ClientAndServer`) must have been done once.
-- **`jq`** and standard macOS userland for `scripts/install-macos.sh`.
+- **`jq`** and standard macOS userland for `utils/install-macos.sh`.
 
 ## Architecture
 
@@ -34,7 +34,7 @@ Three runtime classes plus one editor helper, all in the `DisableDurability` nam
 - **`ModConfig`** — hardcoded `enabled = true`. Looks like a config-loader but doesn't read a file: Pugstorm's RoslynCSharp sandbox blocks `System.IO` at runtime. The singleton API shape is preserved so a future loader can drop in without touching `NoDurabilityLossPatch`. See `docs/research/macos-crossover-wine-workaround.md` for the sandbox details.
 - **`Editor/CLIBuildHelper`** — wraps `PugMod.ModBuilder.BuildMod(...)` for `unity -batchmode -executeMethod`. Lives in its own asmdef (`unity/DisableDurability/Editor/DisableDurability.Editor.asmdef`) because runtime+editor combined asmdefs cannot reference editor-only ones; `ModBuilder` and `ModBuilderSettings` are editor-only.
 
-`unity/` is the canonical source — a 1:1 mirror of the SDK's `Assets/` tree holding **every** file the Unity Editor generates for the mod: the `.cs` sources, both `.asmdef` files, the ModBuilderSettings `.asset`, and all `.meta` files (GUID carriers — versioned per Unity convention). The SDK clone's `Assets/DisableDurability` is a **directory symlink** into `unity/DisableDurability/` (created by `scripts/link.sh`); because it is a directory symlink, any file the Editor adds later is captured automatically — nothing needs wiring up in `link.sh` by hand. Edit in `unity/`; the SDK picks up the change on the next refresh.
+`unity/` is the canonical source — a 1:1 mirror of the SDK's `Assets/` tree holding **every** file the Unity Editor generates for the mod: the `.cs` sources, both `.asmdef` files, the ModBuilderSettings `.asset`, and all `.meta` files (GUID carriers — versioned per Unity convention). The SDK clone's `Assets/DisableDurability` is a **directory symlink** into `unity/DisableDurability/` (created by `utils/link.sh`); because it is a directory symlink, any file the Editor adds later is captured automatically — nothing needs wiring up in `link.sh` by hand. Edit in `unity/`; the SDK picks up the change on the next refresh.
 
 Patch target was identified by inspecting PermaBreak's source under `mod.io/.../5289/mods/3407304_4384035/Scripts/` (a production mod that does the inverse). PermaBreak's published source references a method (`PlayerController.ReduceDurabilityOfEquipment`) that no longer exists in the current game build; the working target is `PlayerEquipment.ChangeDurabilitySystem.OnUpdate` from `Pug.Other.dll`. The full reasoning is in `docs/research/permabreak-patch-target.md`.
 
@@ -42,13 +42,13 @@ Patch target was identified by inspecting PermaBreak's source under `mod.io/.../
 
 Pugstorm's loader extracts `Scripts/` from locally built mods into `~/Library/Application Support/CrossOver/Bottles/Core Keeper/drive_c/users/crossover/AppData/Local/Temp/Pugstorm/Core Keeper/ModLoader/<ModName>/`, and Wine's `RemoveDirectoryRecursive` on the `\\?\C:\` long-path prefix fails with an unspecified IOException. The loader then reports "compilation failed" even though no compile has run.
 
-The workaround — implemented by `scripts/install-macos.sh` — routes the mod through mod.io's load path instead (which doesn't go through `ModLoader/`). It populates three locations:
+The workaround — implemented by `utils/install-macos.sh` — routes the mod through mod.io's load path instead (which doesn't go through `ModLoader/`). It populates three locations:
 
 1. `mod.io/5289/mods/9999999_1/` — extracted files (mod ID `9999999` is a fake; mod.io's real catalog never has it)
 2. `<bottle>/users/crossover/AppData/Local/Temp/Pugstorm/Core Keeper/5289/9999999_1.zip` — ZIP cache the loader expects
 3. `mod.io/5289/state.json` — `subscribedMods += "9999999"` plus a minimal `mods["9999999"]` stub
 
-**Do not open the in-game Mods menu while a fake-ID mod is installed.** Opening it triggers a mod.io API sync that resolves `9999999` against the real mod.io catalog, finds it doesn't exist, and **deletes the local files and the cached ZIP**. The fix is to re-run `./scripts/build.sh` (which re-populates the three locations idempotently). Game start, world load, and gameplay do not trigger the sync; only the mod browser does.
+**Do not open the in-game Mods menu while a fake-ID mod is installed.** Opening it triggers a mod.io API sync that resolves `9999999` against the real mod.io catalog, finds it doesn't exist, and **deletes the local files and the cached ZIP**. The fix is to re-run `../utils/build.sh` (which re-populates the three locations idempotently). Game start, world load, and gameplay do not trigger the sync; only the mod browser does.
 
 CoreLib triggers the same Wine bug when its cache is fresh — its cache structure is deep enough to hit the failure mode reliably. If iterating with CoreLib installed and disabled, leave it in `disabledMods`; if you actually need CoreLib at runtime, beware that any cache-cleaning event can put you back in the same compilation-failed state.
 
@@ -66,4 +66,4 @@ The full background, including what was ruled out and upstream fix candidates, i
 
 1. `source .envrc` — confirm UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH still resolve.
 2. Check `git log --oneline | head -5` and `git status` — the project is on `main` with the worktree removed; new work should create a new worktree via `superpowers:using-git-worktrees`.
-3. If anything in `mod.io/5289/mods/9999999_1/` or the cached ZIP is missing (e.g. after the user opened the Mods menu), `./scripts/build.sh` restores all three locations.
+3. If anything in `mod.io/5289/mods/9999999_1/` or the cached ZIP is missing (e.g. after the user opened the Mods menu), `../utils/build.sh` restores all three locations.
