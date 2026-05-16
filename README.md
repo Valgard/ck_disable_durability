@@ -12,37 +12,23 @@ While the mod is enabled, the game skips the durability-decrement code path for 
 
 - Core Keeper (Steam, PC build)
 - Pugstorm `CoreKeeperModSDK` toolchain to build (developer-side only)
-- For multiplayer: the mod must be installed on both client and server.
-
-## Install (end-user)
-
-1. Download the latest `DisableDurability/` folder from the releases page.
-2. Copy it into your Core Keeper `Mods/` directory:
-   - Windows: `<Steam>/steamapps/common/Core Keeper/CoreKeeper_Data/StreamingAssets/Mods/`
-   - macOS (CrossOver): same path inside the CrossOver bottle.
-3. Launch Core Keeper. The mod loads automatically.
+- For multiplayer: install on both client and server.
 
 ## Configuration
 
-Edit `config.json` next to the mod DLL:
+There is no runtime `config.json` — Pugstorm's RoslynCSharp sandbox blocks file
+I/O. Configuration lives in a source constant in
+`unity/DisableDurability/ModConfig.cs`; edit it and rebuild to change behavior:
 
-```json
-{
-  "enabled": true
-}
-```
-
-Set `enabled` to `false` and restart the game to disable durability protection without removing the mod.
+| Constant | Default | Vanilla | Effect |
+|----------|---------|---------|--------|
+| `enabled` | `true` | — | Master switch. When `false`, the patch early-returns and item durability decreases exactly as vanilla. |
 
 ## Build (developer)
 
-```bash
-source .envrc           # UNITY_BIN, SDK_PATH, MOD_INSTALL_PATH, MOD_NAME, …
-../utils/build.sh      # Unity batchmode build (Unity Editor must be closed)
-```
-
-See `CLAUDE.md` for SDK setup, the macOS/CrossOver workaround, and architecture.
+See `CLAUDE.md` for the build and deploy procedure.
 
 ## License
 
-Source code: see `LICENSE`. Distribution of compiled mod must comply with the Pugstorm Mod Tool EULA (non-commercial only).
+Distribution of the compiled mod must comply with the Pugstorm Mod Tool EULA
+(non-commercial only).
