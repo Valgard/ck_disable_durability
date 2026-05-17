@@ -28,6 +28,23 @@ I/O. Configuration lives in a source constant in
 
 See `CLAUDE.md` for the build and deploy procedure.
 
+## Publishing
+
+Publish a new version to mod.io:
+
+1. Bump the topmost `## [x.y.z]` entry in `CHANGELOG.md`.
+2. One-time only: open the Pugstorm Mod SDK window in Unity and log in via
+   the "Log in" tab.
+3. Close the Unity Editor, then run:
+
+   ```bash
+   source .envrc
+   ../utils/upload.sh            # or: ../utils/upload.sh --dry-run
+   ```
+
+A newly created mod.io profile is hidden — open its profile page and set it
+visible once you have reviewed it.
+
 ## License
 
 Distribution of the compiled mod must comply with the Pugstorm Mod Tool EULA
