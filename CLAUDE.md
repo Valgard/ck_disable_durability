@@ -19,6 +19,24 @@ Unity Editor must be closed (it locks the project). The build takes ~90 s on a w
 
 There are no automated tests. Verification is manual; the gameplay smoke test is "load a world, mine 30 blocks with a pickaxe, durability bar stays put."
 
+## Publishing to mod.io
+
+`../utils/upload.sh` publishes this mod. It runs the Editor class
+`DisableDurability.Editor.CLIPublishHelper.Publish` (alongside
+`CLIBuildHelper`) via Unity batchmode.
+
+- `Editor/DisableDurability.Editor.asmdef` references the mod.io plugin DLL
+  via `overrideReferences: true` + `precompiledReferences:
+  ["modio.UnityPlugin.dll"]`.
+- The published version comes from the topmost `## [x.y.z]` entry of
+  `CHANGELOG.md`; bump it before publishing.
+- The profile logo is `unity/DisableDurability/Editor/logo.png` (readable,
+  uncompressed; min 512×288).
+- The real mod ID lives in
+  `unity/DisableDurability/Editor/DisableDurability_modio.asset`.
+- One-time: log in via the SDK window's "Log in" tab before the first
+  publish.
+
 ## Required external setup
 
 - **Unity Editor `6000.0.59f2`** (exact patch version — pinned in the SDK's `ProjectVersion.txt`, not the SDK's `README.md` which is one patch behind). Add the **Linux Build Support (Mono)** and, on macOS, **Windows Build Support (Mono)** modules via Unity Hub.
