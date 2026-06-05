@@ -21,9 +21,11 @@ There are no automated tests. Verification is manual; the gameplay smoke test is
 
 ## Publishing to mod.io
 
-`../utils/upload.sh` publishes this mod. It runs the Editor class
-`DisableDurability.Editor.CLIPublishHelper.Publish` (alongside
-`CLIBuildHelper`) via Unity batchmode.
+`../utils/upload.sh` publishes this mod. With
+`USE_SHARED_EDITOR_HELPERS=1` it runs the shared Editor class
+`CoreKeeperModUtils.CLIPublishHelper.Publish` (symlinked in from
+`../utils/`, alongside `CLIBuildHelper`) via Unity batchmode. The
+publish reads `MOD_REPO_ROOT` (set in `.envrc`) to locate `CHANGELOG.md`.
 
 - `Editor/DisableDurability.Editor.asmdef` references the mod.io plugin DLL
   via `overrideReferences: true` + `precompiledReferences:
@@ -45,12 +47,12 @@ There are no automated tests. Verification is manual; the gameplay smoke test is
 
 ## Architecture
 
-Three runtime classes plus one editor helper, all in the `DisableDurability` namespace:
+Three runtime classes in the `DisableDurability` namespace, plus the shared editor helpers symlinked in from `../utils/`:
 
 - **`DisableDurabilityMod` (`IMod`)** — bootstrap. The single line that matters is `BurstDisabler.DisableBurstForSystem<ChangeDurabilitySystem>()` in `Init()`. Burst-compiled `OnUpdate` methods are not patchable by Harmony; this call moves the system out of Burst so the Prefix can intercept.
 - **`NoDurabilityLossPatch` (`[HarmonyPatch]`)** — `Prefix` returning `false` skips `ChangeDurabilitySystem.OnUpdate`, which also prevents its two scheduled jobs (`ChangeDurabilityOfHeldEquipmentJob`, `ReduceDurabilityOfAllEquipmentJob`) from running. `[HarmonyPriority(Priority.Last)]` is a defensive default for coexistence with other durability mods.
 - **`ModConfig`** — hardcoded `enabled = true`. Looks like a config-loader but doesn't read a file: Pugstorm's RoslynCSharp sandbox blocks `System.IO` at runtime. The singleton API shape is preserved so a future loader can drop in without touching `NoDurabilityLossPatch`. See `docs/research/macos-crossover-wine-workaround.md` for the sandbox details.
-- **`Editor/CLIBuildHelper`** — wraps `PugMod.ModBuilder.BuildMod(...)` for `unity -batchmode -executeMethod`. Lives in its own asmdef (`unity/DisableDurability/Editor/DisableDurability.Editor.asmdef`) because runtime+editor combined asmdefs cannot reference editor-only ones; `ModBuilder` and `ModBuilderSettings` are editor-only.
+- **Shared editor helpers** (`../utils/CLIBuildHelper.cs`, `CLIPublishHelper.cs`, `LocalizationGenerator.cs`, namespace `CoreKeeperModUtils`) — `CLIBuildHelper` wraps `PugMod.ModBuilder.BuildMod(...)` and `CLIPublishHelper` drives the mod.io publish, both for `unity -batchmode -executeMethod`. They are **not** vendored: `utils/link.sh` symlinks them into `unity/DisableDurability/Editor/` when `USE_SHARED_EDITOR_HELPERS=1`, so they compile into the editor-only `DisableDurability.Editor` asmdef (a combined runtime+editor asmdef cannot reference editor-only types like `ModBuilder`/`ModBuilderSettings`). Mod identity comes from `MOD_NAME` in `.envrc`, so one source serves every mod. `LocalizationGenerator` is a no-op here — DisableDurability ships no `localization.yaml`. The `.cs` symlinks and their Unity-generated `.meta` are gitignored (nothing references them by GUID).
 
 `unity/` is the canonical source — a 1:1 mirror of the SDK's `Assets/` tree holding **every** file the Unity Editor generates for the mod: the `.cs` sources, both `.asmdef` files, the ModBuilderSettings `.asset`, and all `.meta` files (GUID carriers — versioned per Unity convention). The SDK clone's `Assets/DisableDurability` is a **directory symlink** into `unity/DisableDurability/` (created by `utils/link.sh`); because it is a directory symlink, any file the Editor adds later is captured automatically — nothing needs wiring up in `link.sh` by hand. Edit in `unity/`; the SDK picks up the change on the next refresh.
 

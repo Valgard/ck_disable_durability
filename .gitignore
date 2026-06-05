@@ -28,3 +28,14 @@ UserSettings/
 .env
 .envrc
 .envrc.local
+
+# Shared editor helpers — symlinked in by utils/link.sh when
+# USE_SHARED_EDITOR_HELPERS=1 (the .cs are symlinks into ../utils, the .meta
+# are Unity-generated locally; no asset references them by GUID, so neither
+# belongs in the repo).
+unity/DisableDurability/Editor/CLIBuildHelper.cs
+unity/DisableDurability/Editor/CLIBuildHelper.cs.meta
+unity/DisableDurability/Editor/CLIPublishHelper.cs
+unity/DisableDurability/Editor/CLIPublishHelper.cs.meta
+unity/DisableDurability/Editor/LocalizationGenerator.cs
+unity/DisableDurability/Editor/LocalizationGenerator.cs.meta

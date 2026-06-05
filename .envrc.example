@@ -59,3 +59,18 @@ export MOD_SUMMARY="Items never lose durability when used."
 # mod, or sibling mods' mods/<id>_1/ folders collide. faster-talents uses
 # 9999998.
 export FAKE_MOD_ID="9999999"
+
+# --- Shared editor helpers (utils/) -----------------------------------------
+
+# Opt into the shared utils/ editor helpers. utils/link.sh then symlinks
+# CLIBuildHelper.cs / CLIPublishHelper.cs / LocalizationGenerator.cs into
+# unity/DisableDurability/Editor/ (they compile into DisableDurability.Editor
+# under namespace CoreKeeperModUtils), and build.sh / upload.sh switch to the
+# constant -executeMethod CoreKeeperModUtils.CLI{Build,Publish}Helper.*.
+# REQUIRED when set: the per-mod Editor/CLI*Helper.cs are removed.
+# DisableDurability ships no localization.yaml, so the loc generator is a no-op.
+export USE_SHARED_EDITOR_HELPERS=1
+
+# Repo root, read by the shared CLIPublishHelper to locate CHANGELOG.md for
+# the published version + changelog. Required whenever USE_SHARED_EDITOR_HELPERS=1.
+export MOD_REPO_ROOT="$PWD"
