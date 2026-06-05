@@ -45,8 +45,8 @@ export CK_GAME_VERSION="1.2.1.2"
 # --- Mod identity (consumed by the shared utils/ scripts) --------------------
 
 # The mod's PascalCase name. Drives the SDK symlink paths (utils/link.sh) and
-# the Unity build entry point (utils/build.sh runs
-# <MOD_NAME>.Editor.CLIBuildHelper.Build).
+# the Unity build entry point (utils/build.sh runs the shared
+# CoreKeeperModUtils.CLIBuildHelper.Build).
 export MOD_NAME="DisableDurability"
 
 # The mod's kebab-case id, written as `name_id` in the fake mod.io state.json.
@@ -62,15 +62,8 @@ export FAKE_MOD_ID="9999999"
 
 # --- Shared editor helpers (utils/) -----------------------------------------
 
-# Opt into the shared utils/ editor helpers. utils/link.sh then symlinks
-# CLIBuildHelper.cs / CLIPublishHelper.cs / LocalizationGenerator.cs into
-# unity/DisableDurability/Editor/ (they compile into DisableDurability.Editor
-# under namespace CoreKeeperModUtils), and build.sh / upload.sh switch to the
-# constant -executeMethod CoreKeeperModUtils.CLI{Build,Publish}Helper.*.
-# REQUIRED when set: the per-mod Editor/CLI*Helper.cs are removed.
-# DisableDurability ships no localization.yaml, so the loc generator is a no-op.
-export USE_SHARED_EDITOR_HELPERS=1
-
 # Repo root, read by the shared CLIPublishHelper to locate CHANGELOG.md for
-# the published version + changelog. Required whenever USE_SHARED_EDITOR_HELPERS=1.
+# the published version + changelog. The shared utils/ editor helpers
+# (CoreKeeperModUtils.CLI*Helper, symlinked in by link.sh) are now the
+# unconditional default for every mod — there is no opt-in flag anymore.
 export MOD_REPO_ROOT="$PWD"
