@@ -1,4 +1,4 @@
-# Disable Durability — Core Keeper Mod
+# Disable Durability
 
 A small Core Keeper mod that prevents item durability from decreasing when items are used. Built on the official Pugstorm `CoreKeeperModSDK`.
 
@@ -47,5 +47,5 @@ visible once you have reviewed it.
 
 ## License
 
-Distribution of the compiled mod must comply with the Pugstorm Mod Tool EULA
-(non-commercial only).
+Personal-use, non-commercial — Pugstorm Core Keeper EULA. Built against the
+official `CoreKeeperModSDK`. Source on GitHub; contributions welcome.
