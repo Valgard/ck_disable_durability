@@ -1,69 +1,47 @@
-# Disable Durability — environment variables
+#!/usr/bin/env bash
+# Disable Durability — environment variables (TEMPLATE)
 #
-# Copy this file to `.envrc` and fill in your machine-specific paths.
-# `.envrc` is gitignored.
+# Copy this file to `.envrc` (gitignored). Machine-level shared values
+# (UNITY_BIN, SDK_PATH, CK_GAME_VERSION default, MODIO_DEPS_MAP, LOC_TABLE, the
+# ilspycmd PATH entry) are inherited from the parent core_keeper/.envrc —
+# define them once there (copy core_keeper/.envrc.example → core_keeper/.envrc),
+# not here.
 #
-# Optional: install direnv (`brew install direnv`) so the file auto-loads
-# on `cd` into this directory.
-
-# Path to the Unity Editor binary (must be Unity 6000.0.59f2 per the SDK)
-export UNITY_BIN="/Applications/Unity/Hub/Editor/6000.0.59f2/Unity.app/Contents/MacOS/Unity"
-
-# Path to the cloned Pugstorm CoreKeeperModSDK (sibling to this repo recommended)
-export SDK_PATH="/Users/valgard/Projects/private/core_keeper/CoreKeeperModSDK"
-
-# Directory where Pugstorm's ModBuilder writes its output. The builder
-# always appends a `DisableDurability/` subfolder, so the final layout
-# is `$MOD_INSTALL_PATH/DisableDurability/{ModManifest.json,Scripts,Bundles}`.
+#   cp .envrc.example .envrc
+#   direnv allow                     # then `cd` triggers the chain
+#   # or, without direnv:  source .envrc && ../utils/build.sh
 #
-# Win/Linux: pointing this at the game's `CoreKeeper_Data/StreamingAssets/Mods/`
-#   makes the mod active immediately — the game loads from there.
-#
-# macOS / CrossOver: leave this at a neutral staging path (the default below).
-#   Pugstorm's loader cannot extract Scripts/ from StreamingAssets under
-#   Wine, so `../utils/build.sh` auto-runs `../utils/install-macos.sh`,
-#   which copies from this staging dir into the mod.io load path. See
-#   docs/research/macos-crossover-wine-workaround.md. Set
-#   SKIP_MACOS_INSTALL=1 to opt out of the auto-install step.
-export MOD_INSTALL_PATH="$HOME/Library/Caches/disable-durability-build/"
+# Under direnv, source_up_if_exists pulls the parent in on `cd`; a manual
+# `source .envrc` uses the `source ../.envrc` fallback.
 
-# Space-separated list of one or more Core Keeper game versions, each written
-# as a mod.io compatibility tag in the fake mod.io install
-# (utils/install-macos.sh) and on publish (utils/upload.sh). Core Keeper's
-# loader runs ModVersion.IsCompatible(gameVersion, modProfile.tags); without a
-# tag matching the running game the mod is rejected as "not compatible with
-# current version". Each value is the version the game prints as
-# `Game version: X` in Player.log. A single version works as a one-element
-# list; add more to support multiple builds (e.g. "1.2.1.2 1.2.1.4").
-export CK_GAME_VERSION="1.2.1.2"
+# --- Inherit shared values from the parent core_keeper/.envrc ---------------
+if command -v source_up_if_exists >/dev/null 2>&1; then
+    source_up_if_exists          # direnv: walk up to core_keeper/.envrc
+elif [ -f ../.envrc ]; then
+    source ../.envrc             # manual `source .envrc` fallback
+fi
 
-# macOS only — CrossOver bottle that holds Core Keeper. The default below is
-# what `install-macos.sh` uses if this is unset. Override only if your bottle
-# has a non-default name (e.g. "Core Keeper 2").
-# export CK_BOTTLE_PATH="$HOME/Library/Application Support/CrossOver/Bottles/Core Keeper"
+# --- Mod identity (project-inherent — leave as-is) --------------------------
 
-# --- Mod identity (consumed by the shared utils/ scripts) --------------------
-
-# The mod's PascalCase name. Drives the SDK symlink paths (utils/link.sh) and
-# the Unity build entry point (utils/build.sh runs the shared
-# CoreKeeperModUtils.CLIBuildHelper.Build).
+# PascalCase name — drives SDK symlink paths and the build entry point.
 export MOD_NAME="DisableDurability"
 
-# The mod's kebab-case id, written as `name_id` in the fake mod.io state.json.
+# kebab-case id, written as `name_id` in the fake mod.io state.json.
 export MOD_NAME_ID="disable-durability"
 
-# One-line mod summary, written into state.json by utils/install-macos.sh.
+# One-line summary, written into state.json by utils/install-macos.sh.
 export MOD_SUMMARY="Items never lose durability when used."
 
-# A numeric mod.io ID not present in mod.io's catalog. Must be DISTINCT per
-# mod, or sibling mods' mods/<id>_1/ folders collide. faster-talents uses
-# 9999998.
+# Fake mod.io ID — must be DISTINCT per mod. 9999998 = faster-talents,
+# 9999997 = item-checklist, 9999996 = caveling-divining-rod,
+# 9999995 = simple-crafting-pool-extender.
 export FAKE_MOD_ID="9999999"
 
-# --- Shared editor helpers (utils/) -----------------------------------------
+# ModBuilder output staging dir (build.sh → install-macos.sh copies onward).
+export MOD_INSTALL_PATH="$HOME/Library/Caches/disable-durability-build/"
 
-# Repo root, read by the shared CLIPublishHelper to locate CHANGELOG.md for
-# the published version + changelog. The shared utils/ editor helpers
-# (CoreKeeperModUtils.CLI*Helper, symlinked in by link.sh) are now the
-# unconditional default for every mod — there is no opt-in flag anymore.
+# Repo root, read by the shared CLIPublishHelper to locate CHANGELOG.md.
 export MOD_REPO_ROOT="$PWD"
+
+# This mod stays pinned to an older build — override the parent default.
+export CK_GAME_VERSION="1.2.1.2"
