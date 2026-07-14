@@ -11,39 +11,21 @@ While the mod is enabled, the game skips the durability-decrement code path for 
 ## Requirements
 
 - Core Keeper (Steam, PC build)
-- Pugstorm `CoreKeeperModSDK` toolchain to build (developer-side only)
+- **Mod Settings Menu** (required) — provides the in-game settings screen
+- **CoreLib** (required) — a dependency of Mod Settings Menu
 - For multiplayer: install on both client and server.
 
 ## Configuration
 
-There is no runtime `config.json` — Pugstorm's RoslynCSharp sandbox blocks file
-I/O. Configuration lives in a source constant in
-`unity/DisableDurability/ModConfig.cs`; edit it and rebuild to change behavior:
+The mod exposes one setting in-game, under **Options → Mod Settings**:
 
-| Constant | Default | Vanilla | Effect |
-|----------|---------|---------|--------|
-| `enabled` | `true` | — | Master switch. When `false`, the patch early-returns and item durability decreases exactly as vanilla. |
+| Setting | Default | Effect |
+|---------|---------|--------|
+| Enabled | On | Master switch. Turn it off and item durability decreases exactly as in vanilla; turn it back on to freeze durability again. Applies live — no restart. |
 
 ## Build (developer)
 
 See `CLAUDE.md` for the build and deploy procedure.
-
-## Publishing
-
-Publish a new version to mod.io:
-
-1. Bump the topmost `## [x.y.z]` entry in `CHANGELOG.md`.
-2. One-time only: open the Pugstorm Mod SDK window in Unity and log in via
-   the "Log in" tab.
-3. Close the Unity Editor, then run:
-
-   ```bash
-   source .envrc
-   ../utils/upload.sh            # or: ../utils/upload.sh --dry-run
-   ```
-
-A newly created mod.io profile is hidden — open its profile page and set it
-visible once you have reviewed it.
 
 ## License
 
