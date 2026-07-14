@@ -22,7 +22,11 @@ MonoBehaviour:
     disableHarmonyPatching: 0
     requiredOn: 3
     files: []
-    dependencies: []
+    dependencies:
+    - modName: CoreLib
+      required: 1
+    - modName: ModSettingsMenu
+      required: 1
   modPath: Assets/DisableDurability
   forceReimport: 1
   buildBundles: 1

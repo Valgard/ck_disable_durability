@@ -1,0 +1,9 @@
+DisableDurability-Config:
+  _hint:
+    hint: "Section hint under the Disable Durability heading."
+    en: "Stop item durability from ever dropping."
+    de: "Verhindert, dass die Haltbarkeit von Gegenständen sinkt."
+  enabled:
+    hint: "Master on/off toggle label."
+    en: "Enabled"
+    de: "Aktiviert"

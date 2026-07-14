@@ -39,3 +39,9 @@ unity/DisableDurability/Editor/CLIPublishHelper.cs
 unity/DisableDurability/Editor/CLIPublishHelper.cs.meta
 unity/DisableDurability/Editor/LocalizationGenerator.cs
 unity/DisableDurability/Editor/LocalizationGenerator.cs.meta
+
+# Localization — Generated/ is build output from localization/localization.yaml
+# (regenerable at every build), so it is not committed; the parent
+# Localization.meta the Editor makes for the folder is.
+unity/DisableDurability/Localization/Generated/
+unity/DisableDurability/Localization/Generated.meta

@@ -1,3 +1,4 @@
+using ModSettingsMenu.Settings;
 using PlayerEquipment;
 using PugMod;
 using UnityEngine;
@@ -22,6 +23,12 @@ namespace DisableDurability
         public void Init()
         {
             BurstDisabler.DisableBurstForSystem<ChangeDurabilitySystem>();
+
+            ModSettings.Section(this)
+                .Toggle(out var en, "enabled", true)
+                .Build();
+            ModConfig.Instance.Bind(en);
+
             Debug.Log(
                 $"[DisableDurability] Mod initialized. Enabled={ModConfig.Instance.enabled}");
         }
