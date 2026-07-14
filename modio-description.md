@@ -14,6 +14,18 @@ full for good.
 
 **Multiplayer:** install the mod on both the client and the server.
 
+## Settings
+
+Toggle the mod on or off in-game under **Options → Mod Settings** — no need to
+uninstall it to let durability work normally for a while.
+
+## Requirements
+
+- **Mod Settings Menu** (required) — hosts the in-game settings screen
+- **CoreLib** (required) — a dependency of Mod Settings Menu
+
+mod.io will prompt you to install both when you subscribe.
+
 ---
 
 *Built with the official Pugstorm Core Keeper Mod SDK. Personal-use,
