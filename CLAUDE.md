@@ -142,11 +142,14 @@ locations:
    — ZIP cache the loader expects
 3. `mod.io/5289/state.json` — `subscribedMods += "9999999"` plus a minimal `mods["9999999"]` stub
 
-**Do not open the in-game Mods menu while a fake-ID mod is installed.** Opening it
-triggers a mod.io API sync that resolves `9999999` against the real mod.io catalog,
-finds it doesn't exist, and **deletes the local files and the cached ZIP**. The fix is
-to re-run `../utils/build.sh` (which re-populates the three locations idempotently).
-Game start, world load, and gameplay do not trigger the sync; only the mod browser does.
+**Do not open the in-game Mods screen while a fake-ID mod is installed.** Since CK 1.3,
+merely opening it syncs the subscription list with mod.io, and `9999999` — which no real
+subscription contains — drops out of `subscribedMods`: the mod is no longer loaded,
+although its files are still on disk. Pressing **Mod.io** in that screen also deletes
+the installed files. Either way, re-run `../utils/build.sh` (which re-populates the three
+locations idempotently). Game start and world load do not trigger the sync. Mechanism
+and measurement: `../docs/ck/mod-anatomy.md` § The in-game mod menu, and when mod.io is
+contacted.
 
 CoreLib triggers the same Wine bug when its cache is fresh — its cache structure is deep
 enough to hit the failure mode reliably. As of 1.1.0 CoreLib and Mod Settings Menu are
@@ -179,5 +182,6 @@ already applied; they are mostly relevant if a fresh SDK clone is set up.
 2. Check `git log --oneline | head -5` and `git status` — the project is on `main` with
    the worktree removed; new work should create a new worktree via
    `superpowers:using-git-worktrees`.
-3. If anything in `mod.io/5289/mods/9999999_1/` or the cached ZIP is missing (e.g. after
-   the user opened the Mods menu), `../utils/build.sh` restores all three locations.
+3. If the in-game Mods screen has been opened since the last build, run
+   `../utils/build.sh` to restore all three locations — even when every file is still
+   there, because the visit removes `9999999` from `subscribedMods` in `state.json`.

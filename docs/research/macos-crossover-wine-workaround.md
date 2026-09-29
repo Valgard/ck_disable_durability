@@ -131,6 +131,12 @@ filename and the extracted folder name. They also must match the values in `stat
 
 ## Operational rule — do not open the in-game Mod menu
 
+> **Superseded for CK 1.3.** This describes the pre-1.3 Mods menu, which opened the
+> mod.io browser directly. In 1.3 merely opening the Mods screen unregisters the fake
+> entry from `subscribedMods` while leaving its files on disk; only its **Mod.io**
+> button deletes files. Current behaviour: the parent repo's
+> `docs/ck/mod-anatomy.md` § The in-game mod menu, and when mod.io is contacted.
+
 The fake entry is only stable if the mod.io client does not run an API sync. The sync is
 triggered when the user opens the in-game Mod menu (the menu that lists installed mods
 and lets you browse for more). When the sync runs, it queries mod.io for the subscribed
