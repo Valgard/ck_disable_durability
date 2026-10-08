@@ -26,12 +26,21 @@ namespace DisableDurability
             // Registering the system is only half the job: the Burst bypass is
             // armed per world by BurstDisabler.AddWorld, whose sole caller is
             // ECSManager.StartEcs, and which snapshots the systems registered
-            // up to that moment. A dedicated server runs IMod.Init() *after*
-            // StartEcs, so that snapshot was taken while our registration was
-            // still missing, ChangeDurabilitySystem.OnUpdate kept running
-            // through the Burst path and the prefix was never reached. Re-run
-            // it for the worlds that exist by now. The registry is a set, so
-            // this is a no-op wherever Init() ran first (singleplayer, client).
+            // up to that moment. Through CK 1.2 a dedicated server ran
+            // IMod.Init() *after* StartEcs, so that snapshot was taken while our
+            // registration was still missing, ChangeDurabilitySystem.OnUpdate
+            // kept running through the Burst path and the prefix was never
+            // reached. Re-run it for the worlds that exist by now.
+            //
+            // A fresh 1.3.0.5 dedicated server runs Init() before the snapshot,
+            // and since 1.3 StartEcs calls BurstDisabler.ResetWorlds() before
+            // its own AddWorld loop, wiping and re-arming whatever this pass
+            // armed earlier. The pass stays: the SDK promises no ordering, and
+            // the mod is still tagged for 1.2. It is harmless where it is not
+            // needed because AddWorld only inserts a handle for a world that
+            // contains the system (on a client, World.All at Init() time holds
+            // leftover conversion worlds only), not because the registry is a
+            // set. See core_keeper docs/ck/harmony-and-ecs.md.
             //
             // EarlyInit is not an option: TypeManager is not initialised yet
             // there, and DisableBurstForSystem throws NullReferenceException.
