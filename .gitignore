@@ -45,3 +45,7 @@ unity/DisableDurability/Editor/LocalizationGenerator.cs.meta
 # Localization.meta the Editor makes for the folder is.
 unity/DisableDurability/Localization/Generated/
 unity/DisableDurability/Localization/Generated.meta
+
+# Superpowers process artifacts: plans, scratch and the subagent workspace
+docs/superpowers/
+/.superpowers/
